@@ -1,0 +1,6 @@
+plugins {
+    id 'java'
+}
+
+group 'sam97.cs455.hw2'
+version '1.0'
