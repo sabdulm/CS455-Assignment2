@@ -77,7 +77,7 @@ public class Master {
 
         synchronized (this.taskQueue) {
             for (int i = 0; i < this.sizeMatrix; i++) {
-                for (int j = 0; j < this.sizeMatrix; j++) {
+                for (int j = i; j < this.sizeMatrix; j++) {
                     Task task = new Task(in1, in2, out, i, j, this.sizeMatrix,latch);
                     this.taskQueue.add(task);
                 }
