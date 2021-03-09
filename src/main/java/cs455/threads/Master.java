@@ -77,10 +77,11 @@ public class Master {
         synchronized (taskQueue) {
             for (int i = 0; i < this.sizeMatrix; i++) {
                 for (int j = 0; j < this.sizeMatrix; j++) {
-                    Task task = new Task(in1, in2, out, i, j, latch);
+                    Task task = new Task(in1, in2, out, i, j, this.sizeMatrix,latch);
                     taskQueue.add(task);
                 }
             }
+            taskQueue.notifyAll();
         }
     }
 
@@ -109,9 +110,8 @@ public class Master {
         }
 
         // fill up task pool with tasks and notify all threads
-        this.addTaskToPool(this.A, this.B, this.X, this.latchX);
         final long startTimeX = System.currentTimeMillis();
-        taskQueue.notifyAll();
+        this.addTaskToPool(this.A, this.B, this.X, this.latchX);
         this.latchX.await();
         final long endTimeX = System.currentTimeMillis();
 
