@@ -1,5 +1,6 @@
 package cs455.threads;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
@@ -10,7 +11,7 @@ public class Master {
     int threadPoolSize;
 
     final Integer[][] A, B, C, D, X, Y, Z;
-    final Vector<Task> taskQueue;
+    final ArrayList<Task> taskQueue;
     final Worker[] workers;
     final CountDownLatch latchX, latchY, latchZ;
 
@@ -33,7 +34,7 @@ public class Master {
         this.Y = new Integer[this.sizeMatrix][this.sizeMatrix];
         this.Z = new Integer[this.sizeMatrix][this.sizeMatrix];
 
-        this.taskQueue = new Vector<>(0);
+        this.taskQueue = new ArrayList<>(numIndexes*2 + numIndexes);
 
         // initialize workers
         this.workers = new Worker[this.threadPoolSize];
@@ -122,35 +123,38 @@ public class Master {
         // fill up task pool with tasks and notify all threads
         final long startTimeX = System.currentTimeMillis();
         this.addTaskToPool(this.A, this.B, this.X, this.latchX);
+
         this.latchX.await();
         final long endTimeX = System.currentTimeMillis();
-        final long timeX = endTimeX - startTimeX;
+        final double timeX = (endTimeX - startTimeX) / 1000.0;
+
+
         System.out.println("Calculation of matrix X (product of A and B) complete");
         System.out.printf("sum of the elements in X is: %d\n", this.calcSum(this.X));
-        System.out.printf("Time to compute matrix X: %d\n", timeX);
-
+        System.out.printf("Time to compute matrix X: %f\n", timeX);
 
         final long startTimeY = System.currentTimeMillis();
         this.addTaskToPool(this.C, this.D, this.Y, this.latchY);
+
         this.latchY.await();
         final long endTimeY = System.currentTimeMillis();
-        final long timeY = endTimeY - startTimeY;
+        final double timeY = (endTimeY - startTimeY) / 1000.0;
 
         System.out.println("Calculation of matrix Y (product of C and D) complete");
         System.out.printf("sum of the elements in Y is: %d\n", this.calcSum(this.Y));
-        System.out.printf("Time to compute matrix Y: %d\n", timeY);
+        System.out.printf("Time to compute matrix Y: %f\n", timeY);
 
         final long startTimeZ = System.currentTimeMillis();
         this.addTaskToPool(this.X, this.Y, this.Z, this.latchZ);
         this.latchZ.await();
         final long endTimeZ = System.currentTimeMillis();
-        final long timeZ = endTimeZ - startTimeZ;
+        final double timeZ = (endTimeZ - startTimeZ) / 1000.0;
 
         System.out.println("Calculation of matrix Z (product of X and Y) complete");
         System.out.printf("sum of the elements in Z is: %d\n", this.calcSum(this.Z));
-        System.out.printf("Time to compute matrix Z: %d\n", timeZ);
+        System.out.printf("Time to compute matrix Z: %f\n", timeZ);
 
-        System.out.printf("Cumulative time to compute matrixes X, Y, and Z using a thread pool of size = %d is : %d\n", this.threadPoolSize,timeX+timeY+timeZ);
+        System.out.printf("Cumulative time to compute matrixes X, Y, and Z using a thread pool of size = %d is : %f\n", this.threadPoolSize,timeX+timeY+timeZ);
 
         this.closeWorkers();
     }
