@@ -11,7 +11,8 @@ public class Master {
     int threadPoolSize;
 
     final Integer[][] A, B, C, D, X, Y, Z;
-    final ArrayList<Task> taskQueue;
+    final Task[] taskQueue;
+    int taskAvailableIndex;
     final Worker[] workers;
     final CountDownLatch latchX, latchY, latchZ;
 
@@ -34,12 +35,12 @@ public class Master {
         this.Y = new Integer[this.sizeMatrix][this.sizeMatrix];
         this.Z = new Integer[this.sizeMatrix][this.sizeMatrix];
 
-        this.taskQueue = new ArrayList<>(numIndexes*2 + numIndexes);
-
+        this.taskQueue = new Task[numIndexes];
+        this.taskAvailableIndex = numIndexes;
         // initialize workers
         this.workers = new Worker[this.threadPoolSize];
         for (int i = 0; i < this.threadPoolSize; i++) {
-            this.workers[i] = new Worker(this.taskQueue);
+            this.workers[i] = new Worker(this.taskQueue, this.taskAvailableIndex);
         }
 
     }
@@ -76,12 +77,15 @@ public class Master {
     private void addTaskToPool(Integer[][] in1, Integer[][] in2, Integer[][] out, CountDownLatch latch) {
 
         synchronized (this.taskQueue) {
+            this.taskAvailableIndex = 0;
             for (int i = 0; i < this.sizeMatrix; i++) {
                 for (int j = i; j < this.sizeMatrix; j++) {
                     Task task = new Task(in1, in2, out, i, j, this.sizeMatrix,latch);
-                    this.taskQueue.add(task);
+                    this.taskQueue[this.taskAvailableIndex] = task;
+                    this.taskAvailableIndex++;
                 }
             }
+            this.taskAvailableIndex = 0;
             this.taskQueue.notifyAll();
         }
     }
@@ -98,10 +102,12 @@ public class Master {
 
     private void closeWorkers() {
         synchronized (this.taskQueue) {
+            this.taskAvailableIndex = 0;
             for (int i = 0; i < this.threadPoolSize; i++) {
                 Task task = new Task(null, null, null, 0, 0, 0, null, true);
-                this.taskQueue.add(task);
+                this.taskQueue[this.taskAvailableIndex] = task;
             }
+            this.taskAvailableIndex = 0;
             this.taskQueue.notifyAll();
         }
     }

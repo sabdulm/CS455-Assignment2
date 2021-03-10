@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 public class Worker extends Thread{
-    final ArrayList<Task> taskQueue;
-
-    public Worker(ArrayList<Task> tq){
+    final Task[] taskQueue;
+    int taskIndex;
+    public Worker(Task[] tq, int ind){
         this.taskQueue = tq;
+        this.taskIndex = ind;
     }
 
     private Task getTask() throws InterruptedException {
         Task task;
         synchronized (this.taskQueue) {
-            while (this.taskQueue.isEmpty()){
+            while (this.taskIndex == this.taskQueue.length){
                 this.taskQueue.wait();
             }
-            int ind = this.taskQueue.size() -1;
-            task = this.taskQueue.get(ind);
-            this.taskQueue.remove(ind);
+            task = this.taskQueue[this.taskIndex];
+            this.taskIndex++;
 //            this.taskQueue.removeElementAt(this.taskQueue.size()-1);
             this.taskQueue.notifyAll();
         }
