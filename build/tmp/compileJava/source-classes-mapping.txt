@@ -1,10 +1,10 @@
-cs455/threads/Task.java
- cs455.threads.Task
 cs455/threads/MatrixThreads.java
  cs455.threads.MatrixThreads
-cs455/threads/Master.java
- cs455.threads.Master
+cs455/threads/Task.java
+ cs455.threads.Task
 cs455/threads/TaskQueue.java
  cs455.threads.TaskQueue
+cs455/threads/Master.java
+ cs455.threads.Master
 cs455/threads/Worker.java
  cs455.threads.Worker

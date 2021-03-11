@@ -36,10 +36,13 @@ public class Worker extends Thread{
         while(true){
             try {
                 Task task = this.taskQueue.getTask();
-                if (task.done) {
-                    return;
+                if (task != null) {
+                    if (task.done) {
+                        return;
+                    }
+                    this.doTask(task);
                 }
-                this.doTask(task);
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

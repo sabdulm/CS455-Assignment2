@@ -5,7 +5,7 @@ import java.util.concurrent.CountDownLatch;
 public class Task {
     final public Integer[][] input1, input2, output;
     final public int x_coords, y_coords, size;
-    final boolean done;
+    final public boolean done;
     final CountDownLatch latch;
 
     // maybe add latch to signal done for task
