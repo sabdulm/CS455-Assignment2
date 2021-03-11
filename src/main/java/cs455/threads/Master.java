@@ -11,8 +11,7 @@ public class Master {
     int threadPoolSize;
 
     final Integer[][] A, B, C, D, X, Y, Z;
-    final Task[] taskQueue;
-    int taskAvailableIndex;
+    final TaskQueue taskQueue;
     final Worker[] workers;
     final CountDownLatch latchX, latchY, latchZ;
 
@@ -35,12 +34,11 @@ public class Master {
         this.Y = new Integer[this.sizeMatrix][this.sizeMatrix];
         this.Z = new Integer[this.sizeMatrix][this.sizeMatrix];
 
-        this.taskQueue = new Task[numIndexes];
-        this.taskAvailableIndex = numIndexes;
+        this.taskQueue = new TaskQueue(numIndexes);
         // initialize workers
         this.workers = new Worker[this.threadPoolSize];
         for (int i = 0; i < this.threadPoolSize; i++) {
-            this.workers[i] = new Worker(this.taskQueue, this.taskAvailableIndex);
+            this.workers[i] = new Worker(this.taskQueue);
         }
 
     }
@@ -75,19 +73,16 @@ public class Master {
     }
 
     private void addTaskToPool(Integer[][] in1, Integer[][] in2, Integer[][] out, CountDownLatch latch) {
-
-        synchronized (this.taskQueue) {
-            this.taskAvailableIndex = 0;
-            for (int i = 0; i < this.sizeMatrix; i++) {
-                for (int j = i; j < this.sizeMatrix; j++) {
-                    Task task = new Task(in1, in2, out, i, j, this.sizeMatrix,latch);
-                    this.taskQueue[this.taskAvailableIndex] = task;
-                    this.taskAvailableIndex++;
-                }
+        Task[] tasks = new Task[this.sizeMatrix*this.sizeMatrix];
+        int index = 0;
+        for (int i = 0; i < this.sizeMatrix; i++) {
+            for (int j = i; j < this.sizeMatrix; j++) {
+                Task task = new Task(in1, in2, out, i, j, this.sizeMatrix,latch);
+                tasks[index] = task;
+                index++;
             }
-            this.taskAvailableIndex = 0;
-            this.taskQueue.notifyAll();
         }
+        this.taskQueue.addTasksToQueue(tasks);
     }
 
     private Integer calcSum(Integer[][] arr) {
@@ -101,15 +96,12 @@ public class Master {
     }
 
     private void closeWorkers() {
-        synchronized (this.taskQueue) {
-            this.taskAvailableIndex = 0;
-            for (int i = 0; i < this.threadPoolSize; i++) {
-                Task task = new Task(null, null, null, 0, 0, 0, null, true);
-                this.taskQueue[this.taskAvailableIndex] = task;
-            }
-            this.taskAvailableIndex = 0;
-            this.taskQueue.notifyAll();
+        Task[] tasks = new Task[this.threadPoolSize];
+        for (int i = 0; i < this.threadPoolSize; i++) {
+            Task task = new Task(null, null, null, 0, 0, 0, null, true);
+            tasks[i] = task;
         }
+        this.taskQueue.addTasksToQueue(tasks);
     }
 
     public void main() throws InterruptedException {
