@@ -3,7 +3,7 @@ package cs455.threads;
 public class TaskQueue {
     final Task[] taskQueue;
     int currentAvailableTask;
-    final int maxSize;
+    int maxSize;
     boolean empty = true;
     public TaskQueue(int size) {
         this.maxSize = size;
@@ -17,6 +17,7 @@ public class TaskQueue {
                 this.taskQueue[i] = tasks[i];
             }
             this.currentAvailableTask = 0;
+            this.maxSize = tasks.length;
             this.empty = false;
             this.taskQueue.notifyAll();
         }

@@ -1,6 +1,5 @@
 package cs455.threads;
 
-import java.util.Random;
 
 public class MatrixThreads {
 

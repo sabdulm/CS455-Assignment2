@@ -8,7 +8,6 @@ public class Task {
     final public boolean done;
     final CountDownLatch latch;
 
-    // maybe add latch to signal done for task
 
     public Task(Integer[][] in1, Integer[][] in2, Integer[][] out, int x, int y, int s, CountDownLatch l){
         this.input1 = in1;
