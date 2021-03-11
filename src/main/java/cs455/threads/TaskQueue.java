@@ -26,7 +26,7 @@ public class TaskQueue {
     public Task getTask() throws InterruptedException {
         Task task;
         synchronized (this.taskQueue) {
-            while(this.empty || this.currentAvailableTask == (this.maxSize-1)) {
+            while(this.empty || this.currentAvailableTask == this.maxSize) {
 //                System.out.printf("%s waiting for tasks %d, %d\n", Thread.currentThread().getName(), this.currentAvailableTask, this.maxSize);
                 this.taskQueue.wait();
             }
