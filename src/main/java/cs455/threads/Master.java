@@ -9,7 +9,6 @@ public class Master {
     int randomSeed;
     int sizeMatrix;
     int threadPoolSize;
-    ExecutorService executorService;
 
     final Integer[][] A, B, C, D, X, Y, Z;
     final TaskQueue taskQueue;
@@ -24,7 +23,6 @@ public class Master {
         this.latchX = new CountDownLatch(numIndexes);
         this.latchY = new CountDownLatch(numIndexes);
         this.latchZ = new CountDownLatch(numIndexes);
-        this.executorService = Executors.newFixedThreadPool(this.threadPoolSize);
 
         Random randomizer = new Random(this.randomSeed);
 
@@ -39,9 +37,9 @@ public class Master {
         this.taskQueue = new TaskQueue(numIndexes);
         // initialize workers
         this.workers = new Worker[this.threadPoolSize];
-//        for (int i = 0; i < this.threadPoolSize; i++) {
-//            this.workers[i] = new Worker(this.taskQueue);
-//        }
+        for (int i = 0; i < this.threadPoolSize; i++) {
+            this.workers[i] = new Worker(this.taskQueue);
+        }
 
     }
 
@@ -78,14 +76,13 @@ public class Master {
         Task[] tasks = new Task[this.sizeMatrix*this.sizeMatrix];
         int index = 0;
         for (int i = 0; i < this.sizeMatrix; i++) {
-            for (int j = i; j < this.sizeMatrix; j++) {
+            for (int j = 0; j < this.sizeMatrix; j++) {
                 Task task = new Task(in1, in2, out, i, j, this.sizeMatrix,latch);
                 tasks[index] = task;
                 index++;
-                this.executorService.submit(task);
             }
         }
-//        this.taskQueue.addTasksToQueue(tasks);
+        this.taskQueue.addTasksToQueue(tasks);
     }
 
     private Integer calcSum(Integer[][] arr) {
@@ -117,9 +114,9 @@ public class Master {
         System.out.printf("Sum of the elements in input matrix D = %d\n", this.calcSum(this.D));
 
         // start all worker threads
-//        for (int i = 0; i < this.threadPoolSize; i++) {
-//            this.workers[i].start();
-//        }
+        for (int i = 0; i < this.threadPoolSize; i++) {
+            this.workers[i].start();
+        }
 
         // fill up task pool with tasks and notify all threads
         final long startTimeX = System.currentTimeMillis();
@@ -156,8 +153,8 @@ public class Master {
         System.out.printf("Time to compute matrix Z: %f\n", timeZ);
 
         System.out.printf("Cumulative time to compute matrixes X, Y, and Z using a thread pool of size = %d is : %f\n", this.threadPoolSize,timeX+timeY+timeZ);
-        this.executorService.shutdown();
-//        this.closeWorkers();
+//        this.executorService.shutdown();
+        this.closeWorkers();
     }
 
 }

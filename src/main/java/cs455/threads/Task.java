@@ -2,7 +2,7 @@ package cs455.threads;
 
 import java.util.concurrent.CountDownLatch;
 
-public class Task implements Runnable {
+public class Task{
     final public Integer[][] input1, input2, output;
     final public int x_coords, y_coords, size;
     final public boolean done;
@@ -31,22 +31,22 @@ public class Task implements Runnable {
         this.latch = l;
     }
 
-    @Override
-    public void run() {
-        Integer sum1 = 0, sum2 = 0;
-
-        for (int ind = 0; ind < this.size; ind++) {
-            sum1 +=  (this.input1[this.x_coords][ind] * this.input2[ind][this.y_coords]);
-            if (this.y_coords != this.x_coords) {
-                sum2 +=  (this.input1[ind][this.x_coords] * this.input2[this.y_coords][ind]);
-            }
-        }
-//        System.out.printf("%s completed task %d, %d\n", Thread.currentThread().getName(), task.x_coords, task.y_coords);
-        this.output[this.x_coords][this.y_coords] = sum1;
-        if (this.y_coords != this.x_coords) {
-            this.output[this.y_coords][this.x_coords] = sum2;
-            this.latch.countDown();
-        }
-        this.latch.countDown();
-    }
+//    @Override
+//    public void run() {
+//        Integer sum1 = 0, sum2 = 0;
+//
+//        for (int ind = 0; ind < this.size; ind++) {
+//            sum1 +=  (this.input1[this.x_coords][ind] * this.input2[ind][this.y_coords]);
+////            if (this.y_coords != this.x_coords) {
+////                sum2 +=  (this.input1[ind][this.x_coords] * this.input2[this.y_coords][ind]);
+////            }
+//        }
+////        System.out.printf("%s completed task %d, %d\n", Thread.currentThread().getName(), task.x_coords, task.y_coords);
+//        this.output[this.x_coords][this.y_coords] = sum1;
+////        if (this.y_coords != this.x_coords) {
+////            this.output[this.y_coords][this.x_coords] = sum2;
+////            this.latch.countDown();
+////        }
+//        this.latch.countDown();
+//    }
 }
