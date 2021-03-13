@@ -3,40 +3,44 @@ package cs455.threads;
 public class TaskQueue {
     final Task[] taskQueue;
     int currentAvailableTask;
-    int maxSize;
-    boolean empty = true;
-    public TaskQueue(int size) {
-        this.maxSize = size;
-        this.taskQueue = new Task[this.maxSize];
-        this.currentAvailableTask = -1;
+    int size;
+    int capacity;
+    boolean empty;
+
+    public TaskQueue(int cap) {
+        this.capacity = cap;
+        this.taskQueue = new Task[this.capacity];
+        this.currentAvailableTask = 0;
+        this.empty = true;
     }
 
     public void addTasksToQueue(Task[] tasks) {
+
         synchronized (this.taskQueue) {
             for (int i = 0; i < tasks.length; i++) {
                 this.taskQueue[i] = tasks[i];
             }
-            this.currentAvailableTask = 0;
-            this.maxSize = tasks.length;
             this.empty = false;
+            this.currentAvailableTask = 0;
+            this.size = tasks.length;
             this.taskQueue.notifyAll();
         }
     }
 
     public Task getTask() throws InterruptedException {
         Task task;
+
         synchronized (this.taskQueue) {
-            while(this.empty || this.currentAvailableTask == this.maxSize) {
-//                System.out.printf("%s waiting for tasks %d, %d\n", Thread.currentThread().getName(), this.currentAvailableTask, this.maxSize);
+
+            if (this.empty) {
                 this.taskQueue.wait();
             }
             task = this.taskQueue[this.currentAvailableTask];
 
-            if(this.currentAvailableTask == (this.maxSize-1)) {
+            if (this.currentAvailableTask == (this.size - 1)) {
                 this.empty = true;
-            } else {
-                this.currentAvailableTask++;
             }
+            this.currentAvailableTask++;
             this.taskQueue.notifyAll();
         }
         return task;

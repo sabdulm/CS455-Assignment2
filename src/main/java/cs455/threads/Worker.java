@@ -1,30 +1,25 @@
 package cs455.threads;
 
-
-public class Worker extends Thread{
+public class Worker extends Thread {
     final TaskQueue taskQueue;
 
-    public Worker(TaskQueue tq){
+    public Worker(TaskQueue tq) {
         this.taskQueue = tq;
     }
 
-
-    private void doTask(Task task){
-        Integer sum1 = 0, sum2 = 0;
-
+    private void doTask(Task task) {
+        Integer sum1 = 0;
         for (int ind = 0; ind < task.size; ind++) {
-            sum1 +=  (task.input1[task.x_coords][ind] * task.input2[ind][task.y_coords]);
+            sum1 += (task.input1[task.x_coords][ind] * task.input2[ind][task.y_coords]);
         }
-//        System.out.printf("%s completed task %d, %d\n", Thread.currentThread().getName(), task.x_coords, task.y_coords);
         task.output[task.x_coords][task.y_coords] = sum1;
-
         task.latch.countDown();
     }
 
     @Override
     public void run() {
         super.run();
-        while(true){
+        while (true) {
             try {
                 Task task = this.taskQueue.getTask();
                 if (task != null) {

@@ -1,10 +1,9 @@
 package cs455.threads;
 
-
 public class MatrixThreads {
 
     public static void main(String[] args) throws InterruptedException {
-        if(args.length != 3) {
+        if (args.length != 3) {
             System.out.println("Invalid number of arguments");
             System.out.println("Usage: java cs455.threads.MatrixThreads thread-pool-size matrix-dimension seed");
             System.out.println("Example: java cs455.threads.MatrixThreads 10 3000 31459");
@@ -21,6 +20,3 @@ public class MatrixThreads {
 
     }
 }
-
-
-
