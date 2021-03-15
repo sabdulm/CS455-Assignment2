@@ -69,7 +69,7 @@ public class Master {
         Task[] tasks = new Task[this.sizeMatrix * this.sizeMatrix];
         int index = 0;
         for (int i = 0; i < this.sizeMatrix; i++) {
-            for (int j = 0; j < this.sizeMatrix; j++) {
+            for (int j = i; j < this.sizeMatrix; j++) {
                 Task task = new Task(in1, in2, out, i, j, this.sizeMatrix, latch);
                 tasks[index] = task;
                 index++;

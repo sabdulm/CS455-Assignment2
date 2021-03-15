@@ -11,12 +11,20 @@ public class Worker extends Thread {
     // simply calculates the value for a certain index in the output matrix
     // after which it counts down the latch to signal a task has completed
     private void doTask(Task task) {
-        Integer sum1 = 0;
+        Integer sum1 = 0, sum2 = 0;
         for (int ind = 0; ind < task.size; ind++) {
             sum1 += (task.input1[task.x_coords][ind] * task.input2[ind][task.y_coords]);
+            if (task.x_coords != task.y_coords) {
+                sum2 += (task.input1[task.y_coords][ind] * task.input2[ind][task.x_coords]);
+            }
         }
         task.output[task.x_coords][task.y_coords] = sum1;
         task.latch.countDown();
+
+        if (task.x_coords != task.y_coords) {
+            task.output[task.y_coords][task.x_coords] = sum2;
+            task.latch.countDown();
+        }
     }
 
     // worker simply gets a task from the queue and does it. untill it is asked to
