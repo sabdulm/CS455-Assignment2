@@ -1,3 +1,6 @@
+// The Master class handles the core program. It creates and initializes all the matrices with the provided size and seed.
+// Master also handles the creating of the worker thread pool and the task queue
+
 package cs455.threads;
 
 import java.util.Random;
@@ -18,10 +21,14 @@ public class Master {
         this.sizeMatrix = sm;
         this.randomSeed = rs;
         int numIndexes = this.sizeMatrix * this.sizeMatrix;
+
+        // latches for synchronizing stages of the program
         this.latchX = new CountDownLatch(numIndexes);
         this.latchY = new CountDownLatch(numIndexes);
         this.latchZ = new CountDownLatch(numIndexes);
 
+        // initializes the randomizer with the given seed to fill in the initial matrix
+        // values
         Random randomizer = new Random(this.randomSeed);
 
         this.A = this.fillInitialArray(randomizer);
@@ -32,8 +39,12 @@ public class Master {
         this.Y = new Integer[this.sizeMatrix][this.sizeMatrix];
         this.Z = new Integer[this.sizeMatrix][this.sizeMatrix];
 
+        // initialize the task queue
+
         this.taskQueue = new TaskQueue(numIndexes);
+
         // initialize workers
+
         this.workers = new Worker[this.threadPoolSize];
         for (int i = 0; i < this.threadPoolSize; i++) {
             this.workers[i] = new Worker(this.taskQueue);
@@ -41,6 +52,7 @@ public class Master {
 
     }
 
+    // fills in the random values to the array
     Integer[][] fillInitialArray(Random randomizer) {
         Integer[][] arr = new Integer[this.sizeMatrix][this.sizeMatrix];
         for (int i = 0; i < this.sizeMatrix; i++) {
@@ -51,25 +63,8 @@ public class Master {
         return arr;
     }
 
-    void printArrays() {
-        Integer[][][] temp = new Integer[4][this.sizeMatrix][this.sizeMatrix];
-        temp[0] = this.A;
-        temp[1] = this.B;
-        temp[2] = this.C;
-        temp[3] = this.D;
-
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < this.sizeMatrix; j++) {
-                for (int k = 0; k < this.sizeMatrix; k++) {
-                    System.out.printf("%d ", temp[i][j][k]);
-                }
-                System.out.println("");
-            }
-            System.out.println("");
-        }
-
-    }
-
+    // adds tasks to the task pool. firstly creates a list of tasks which is sent to
+    // the task pool object to be added
     private void addTaskToPool(Integer[][] in1, Integer[][] in2, Integer[][] out, CountDownLatch latch) {
         Task[] tasks = new Task[this.sizeMatrix * this.sizeMatrix];
         int index = 0;
@@ -83,6 +78,7 @@ public class Master {
         this.taskQueue.addTasksToQueue(tasks);
     }
 
+    // utility func to calculate the sum of a matrix
     private Integer calcSum(Integer[][] arr) {
         Integer sum = 0;
         for (int i = 0; i < this.sizeMatrix; i++) {
@@ -93,6 +89,7 @@ public class Master {
         return sum;
     }
 
+    // signals the worker threads to shutdown
     private void closeWorkers() {
         Task[] tasks = new Task[this.threadPoolSize];
         for (int i = 0; i < this.threadPoolSize; i++) {
@@ -103,6 +100,7 @@ public class Master {
     }
 
     public void main() throws InterruptedException {
+        // start the workers to execute their run method
         for (int i = 0; i < this.threadPoolSize; i++) {
             this.workers[i].start();
         }
@@ -114,9 +112,10 @@ public class Master {
         System.out.printf("Sum of the elements in input matrix C = %d\n", this.calcSum(this.C));
         System.out.printf("Sum of the elements in input matrix D = %d\n\n", this.calcSum(this.D));
 
-        // start all worker threads
+        // for each stage of the program, it adds tasks to the queue and then waits for
+        // completion
+        // after which the sum and time is printed out
 
-        // fill up task pool with tasks and notify all threads
         final long startTimeX = System.currentTimeMillis();
         this.addTaskToPool(this.A, this.B, this.X, this.latchX);
 
@@ -151,6 +150,8 @@ public class Master {
 
         System.out.printf("Cumulative time to compute matrixes X, Y, and Z using a thread pool of size = %d is : %f\n",
                 this.threadPoolSize, timeX + timeY + timeZ);
+
+        // simply signal the workers to close
         this.closeWorkers();
     }
 

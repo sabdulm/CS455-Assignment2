@@ -7,6 +7,8 @@ public class TaskQueue {
     int capacity;
     boolean empty;
 
+    // the task queue has an initial capacity which is size*size of the input
+    // argument
     public TaskQueue(int cap) {
         this.capacity = cap;
         this.taskQueue = new Task[this.capacity];
@@ -14,6 +16,8 @@ public class TaskQueue {
         this.empty = true;
     }
 
+    // simply gets the lock of the taskqueue object and adds tasks to it. Then it
+    // simply signals all threads waiting on that tasks are available
     public void addTasksToQueue(Task[] tasks) {
 
         synchronized (this.taskQueue) {
@@ -27,6 +31,8 @@ public class TaskQueue {
         }
     }
 
+    // gets a lock on the queue. if it is not empty it returns first available task
+    // and notifies all threads waiting on it. Otherwise it will wait itself
     public Task getTask() throws InterruptedException {
         Task task;
 

@@ -2,6 +2,7 @@ package cs455.threads;
 
 import java.util.concurrent.CountDownLatch;
 
+// Simply a data transfer object (DTO) used to signify a single task(the value of a single index in the output array)
 public class Task {
     final public Integer[][] input1, input2, output;
     final public int x_coords, y_coords, size;
