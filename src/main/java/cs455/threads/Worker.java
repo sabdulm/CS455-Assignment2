@@ -8,7 +8,9 @@ public class Worker extends Thread {
         this.taskQueue = tq;
     }
 
-    // simply calculates the value for a certain index in the output matrix
+    // simply calculates the value for a certain index in the output matrix, to
+    // decrease time it also computes the output at the diagonally opposite index as
+    // well : output[x][y] and output[y][x]
     // after which it counts down the latch to signal a task has completed
     private void doTask(Task task) {
         Integer sum1 = 0, sum2 = 0;
