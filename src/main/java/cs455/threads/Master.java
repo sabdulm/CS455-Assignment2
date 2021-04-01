@@ -11,7 +11,7 @@ public class Master {
     int sizeMatrix;
     int threadPoolSize;
 
-    final Integer[][] A, B, C, D, X, Y, Z;
+    final int[][] A, B, C, D, X, Y, Z;
     final TaskQueue taskQueue;
     final Worker[] workers;
     final CountDownLatch latchX, latchY, latchZ;
@@ -35,9 +35,9 @@ public class Master {
         this.B = this.fillInitialArray(randomizer);
         this.C = this.fillInitialArray(randomizer);
         this.D = this.fillInitialArray(randomizer);
-        this.X = new Integer[this.sizeMatrix][this.sizeMatrix];
-        this.Y = new Integer[this.sizeMatrix][this.sizeMatrix];
-        this.Z = new Integer[this.sizeMatrix][this.sizeMatrix];
+        this.X = new int[this.sizeMatrix][this.sizeMatrix];
+        this.Y = new int[this.sizeMatrix][this.sizeMatrix];
+        this.Z = new int[this.sizeMatrix][this.sizeMatrix];
 
         // initialize the task queue
 
@@ -53,8 +53,8 @@ public class Master {
     }
 
     // fills in the random values to the array
-    Integer[][] fillInitialArray(Random randomizer) {
-        Integer[][] arr = new Integer[this.sizeMatrix][this.sizeMatrix];
+    int[][] fillInitialArray(Random randomizer) {
+        int[][] arr = new int[this.sizeMatrix][this.sizeMatrix];
         for (int i = 0; i < this.sizeMatrix; i++) {
             for (int j = 0; j < this.sizeMatrix; j++) {
                 arr[i][j] = randomizer.nextInt();
@@ -65,7 +65,7 @@ public class Master {
 
     // adds tasks to the task pool. firstly creates a list of tasks which is sent to
     // the task pool object to be added
-    private void addTaskToPool(Integer[][] in1, Integer[][] in2, Integer[][] out, CountDownLatch latch) {
+    private void addTaskToPool(int[][] in1, int[][] in2, int[][] out, CountDownLatch latch) {
         Task[] tasks = new Task[this.sizeMatrix * this.sizeMatrix];
         int index = 0;
         for (int i = 0; i < this.sizeMatrix; i++) {
@@ -79,8 +79,8 @@ public class Master {
     }
 
     // utility func to calculate the sum of a matrix
-    private Integer calcSum(Integer[][] arr) {
-        Integer sum = 0;
+    private int calcSum(int[][] arr) {
+        int sum = 0;
         for (int i = 0; i < this.sizeMatrix; i++) {
             for (int j = 0; j < this.sizeMatrix; j++) {
                 sum += arr[i][j];

@@ -21,9 +21,7 @@ public class TaskQueue {
     public void addTasksToQueue(Task[] tasks) {
 
         synchronized (this.taskQueue) {
-            for (int i = 0; i < tasks.length; i++) {
-                this.taskQueue[i] = tasks[i];
-            }
+            System.arraycopy(tasks, 0, this.taskQueue, 0, tasks.length);
             this.empty = false;
             this.currentAvailableTask = 0;
             this.size = tasks.length;
